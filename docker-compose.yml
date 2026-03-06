@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  rocky-tic-tac-toe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rocky-tic-tac-toe
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=/app/data/rocky-tic-tac-toe.sqlite
+      - NEXT_PUBLIC_APP_NAME=Rocky Tic Tac Toe
+      - NEXT_PUBLIC_BASE_URL=http://localhost:3000
+      - INITIAL_COINS=100
+      - WIN_REWARD=10
+      - DRAW_REWARD=3
+    volumes:
+      - rocky-sqlite-data:/app/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  rocky-sqlite-data:
+    driver: local
